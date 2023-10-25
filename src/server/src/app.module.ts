@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LoggerMiddleware } from './middleware/logger.middleware';
+import { EventsModule } from './events/events.module';
 
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -8,7 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV
+      envFilePath: !process.env.NODE_ENV
         ? '.env'
         : `.env.${process.env.NODE_ENV}`,
     }),
@@ -19,6 +20,7 @@ import { MongooseModule } from '@nestjs/mongoose';
       }),
       inject: [ConfigService],
     }),
+    EventsModule,
   ],
 })
 export class AppModule implements NestModule {
