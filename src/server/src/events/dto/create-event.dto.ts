@@ -4,8 +4,8 @@ export type EventType = 'crosspromo' | 'liveops' | 'app' | 'ads';
 export type EventPriority = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
 export class CreateEventDto {
-  @Min(1, { message: '_id' })
-  @IsInt({ message: '_id' })
+  @Min(1, { message: 'id' })
+  @IsInt({ message: 'id' })
   readonly _id: number;
 
   @IsString({ message: 'name' })
