@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const sanitize = require('mongo-sanitize');
 
 export type EventDocument = HydratedDocument<Event>;
 
@@ -23,3 +25,20 @@ export class Event {
 
 export const EventSchema = SchemaFactory.createForClass(Event);
 
+EventSchema.pre('save', function (next) {
+  const schema = this.schema.paths;
+
+  for (const field in schema) {
+    this[field] = sanitize(this[field]);
+  }
+
+  next();
+});
+
+EventSchema.set('toJSON', {
+  transform: function (_doc, ret) {
+    ret.id = ret._id;
+    delete ret._id;
+    delete ret.__v;
+  },
+});
