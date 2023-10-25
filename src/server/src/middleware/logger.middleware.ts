@@ -9,15 +9,17 @@ export class LoggerMiddleware implements NestMiddleware {
     const startAt = process.hrtime();
     const { method, originalUrl } = req;
 
-    res.on('finish', () => {
-      const { statusCode } = res;
-      const contentLength = res.get('content-length');
-      const diff = process.hrtime(startAt);
-      const responseTime = diff[0] * 1e3 + diff[1] * 1e-6;
-      this.logger.log(
-        `${method} ${originalUrl} ${statusCode} ${contentLength} ${responseTime} ms`,
-      );
-    });
+    if (process.env.NODE_ENV == 'development') {
+      res.on('finish', () => {
+        const { statusCode } = res;
+        const contentLength = res.get('content-length');
+        const diff = process.hrtime(startAt);
+        const responseTime = diff[0] * 1e3 + diff[1] * 1e-6;
+        this.logger.log(
+          `${method} ${originalUrl} ${statusCode} ${contentLength} ${responseTime} ms`,
+        );
+      });
+    }
 
     next();
   }
