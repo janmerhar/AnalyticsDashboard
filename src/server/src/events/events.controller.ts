@@ -18,4 +18,9 @@ import { Event } from './schemas/event.schema';
 @Controller('events')
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
+  @Post('/add')
+  async postEvent(@Body() body: CreateEventDto): Promise<Event> {
+    return this.eventsService.insertOne(body);
+  }
+
 }
