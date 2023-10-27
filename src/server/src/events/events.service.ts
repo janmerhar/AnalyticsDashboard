@@ -17,4 +17,13 @@ export class EventsService {
     @InjectModel(Event.name) private readonly eventModel: Model<Event>,
   ) {}
 
+  async insertOne(createEventDto: CreateEventDto): Promise<Event> {
+    try {
+      const event = new this.eventModel(createEventDto);
+      return await event.save();
+    } catch (error) {
+      throw new EventAlreadyExists();
+    }
+  }
+
 }
