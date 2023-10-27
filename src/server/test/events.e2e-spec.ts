@@ -152,6 +152,35 @@ describe('EventsController (e2e)', () => {
     });
   });
 
+  describe('PATCH /api/events/update/:id', () => {
+    const createEventDto = CreateEventDtoStub();
+    const updateEventDto = UpdateEventDtoStub();
+
+    it('updates existing event', async () => {
+      const result = await request(app.getHttpServer())
+        .patch(`/api/events/update/${createEventDto._id}`)
+        .send(updateEventDto);
+
+      expect(result.statusCode).toBe(200);
+
+      const { body } = result;
+      expect(body.id).toBe(updateEventDto._id);
+      expect(body.name).toBe(updateEventDto.name);
+      expect(body.type).toBe(updateEventDto.type);
+      expect(body.priority).toBe(updateEventDto.priority);
+      expect(body.description).toBe(updateEventDto.description);
+    });
+
+    it('fails to update non-existing event', async () => {
+      const result = await request(app.getHttpServer())
+        .patch(`/api/events/update/${createEventDto._id * 1000}`)
+        .send(updateEventDto);
+
+      expect(result.statusCode).toBe(409);
+    });
+  });
+
+
   afterAll(async () => {
     await app.close();
   });
