@@ -88,4 +88,14 @@ export class EventsService {
       }
     }
   }
+
+  async deleteOne(id: number): Promise<null> {
+    const result = await this.eventModel.findByIdAndDelete(id).exec();
+
+    if (!result) {
+      throw new EventNotFound();
+    }
+
+    return null;
+  }
 }
