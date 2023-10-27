@@ -39,4 +39,16 @@ export class EventsController {
     return this.eventsService.insertOne(body);
   }
 
+  @Patch('/update/:id')
+  patchEvent(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+    @Body() body: CreateEventDto,
+  ): Promise<Event | null> {
+    return this.eventsService.updateOne(id, body);
+  }
+
 }
