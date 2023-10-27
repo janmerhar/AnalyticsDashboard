@@ -180,6 +180,23 @@ describe('EventsController (e2e)', () => {
     });
   });
 
+  describe('DELETE /api/events/delete/:id', () => {
+    it('deletes existing event', async () => {
+      const result = await request(app.getHttpServer())
+        .delete(`/api/events/delete/${UpdateEventDtoStub()._id}`)
+        .send(CreateEventDtoStub());
+
+      expect(result.statusCode).toBe(200);
+    });
+
+    it('fails to delete non-existing event', async () => {
+      const result = await request(app.getHttpServer()).delete(
+        `/api/events/delete/${UpdateEventDtoStub()._id}`,
+      );
+
+      expect(result.statusCode).toBe(204);
+    });
+  });
 
   afterAll(async () => {
     await app.close();
