@@ -62,4 +62,30 @@ export class EventsService {
     }
   }
 
+  async updateOne(
+    id: number,
+    createEventDto: CreateEventDto,
+  ): Promise<Event | null> {
+    if (id == createEventDto._id) {
+      await this.eventModel.updateOne({ _id: id }, createEventDto).exec();
+
+      return this.eventModel.findById(createEventDto._id).exec();
+    } else {
+      const isNewIDAvailable = await this.eventModel
+        .findById(createEventDto._id)
+        .exec();
+
+      if (isNewIDAvailable !== null) {
+        throw new EventAlreadyExists();
+      }
+
+      const deleteResult = await this.eventModel.deleteOne({ _id: id }).exec();
+
+      if (!deleteResult.deletedCount) {
+        throw new EventNotFound();
+      } else {
+        return await this.insertOne(createEventDto);
+      }
+    }
+  }
 }
