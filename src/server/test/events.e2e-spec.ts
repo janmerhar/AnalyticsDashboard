@@ -18,6 +18,31 @@ describe('EventsController (e2e)', () => {
     await app.init();
   });
 
+  describe('POST /api/events/add', () => {
+    it('inserts new event', async () => {
+      const result = await request(app.getHttpServer())
+        .post('/api/events/add')
+        .send(CreateEventDtoStub());
+
+      expect(result.statusCode).toBe(201);
+
+      const { body } = result;
+      expect(body.id).toBe(CreateEventDtoStub()._id);
+      expect(body.name).toBe(CreateEventDtoStub().name);
+      expect(body.type).toBe(CreateEventDtoStub().type);
+      expect(body.priority).toBe(CreateEventDtoStub().priority);
+      expect(body.description).toBe(CreateEventDtoStub().description);
+    });
+
+    it('fails to insert duplicate event', async () => {
+      const result = await request(app.getHttpServer())
+        .post('/api/events/add')
+        .send(CreateEventDtoStub());
+
+      expect(result.statusCode).toBe(409);
+    });
+  });
+
   afterAll(async () => {
     await app.close();
   });
