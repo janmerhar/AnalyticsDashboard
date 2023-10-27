@@ -51,4 +51,14 @@ export class EventsController {
     return this.eventsService.updateOne(id, body);
   }
 
+  @Delete('/delete/:id')
+  async deleteEvent(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ): Promise<boolean> {
+    return (await this.eventsService.deleteOne(id)) ? true : false;
+  }
 }
