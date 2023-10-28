@@ -2,3 +2,10 @@
 .env
 .env.development
 .env.test
+
+# Test files
+__snapshots__
+
+# Transpiled output
+dest
+tsconfig.tsbuildinfo
