@@ -45,7 +45,7 @@ export class Event implements EventDetails {
     }
 
     return {
-      _id: this.id,
+      _id: parseInt(this.id),
       name: this.name,
       description: this.description,
       type: this.type,
@@ -56,7 +56,7 @@ export class Event implements EventDetails {
   isValid(): boolean | string[] {
     const errors: string[] = [];
 
-    if (!this.id || typeof this.id !== "number" || this.id < 0) {
+    if (!this.id || this.id < 0) {
       errors.push("id");
     }
 
