@@ -85,9 +85,10 @@ export class Event implements EventDetails {
 
   static async fetchAll(
     axios: AxiosInstance,
-    filter: EventFilter
+    filter: EventFilter,
+    page: number = 1
   ): Promise<Event[]> {
-    const response = await axios.get("/events", { params: filter });
+    const response = await axios.get(`/events/${page}`, { params: filter });
 
     return response.data.map((event: EventDetails) => new Event(event));
   }
