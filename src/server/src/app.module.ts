@@ -5,6 +5,9 @@ import { EventsModule } from './events/events.module';
 
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,6 +24,9 @@ import { MongooseModule } from '@nestjs/mongoose';
       inject: [ConfigService],
     }),
     EventsModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../..', 'client/dist'),
+    }),
   ],
 })
 export class AppModule implements NestModule {
