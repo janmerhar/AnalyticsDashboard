@@ -19,7 +19,6 @@ import en from "../src/locales/en";
 
 const i18n = createI18n({
   locale: "en",
-  //   fallbackLocale: "si",
   messages: {
     en,
   },
@@ -30,4 +29,12 @@ const app = createApp(App);
 
 registerPlugins(app);
 app.use(i18n);
+
+import axios from "axios";
+
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
+axios.defaults.headers["Content-Type"] = "application/json";
+
+app.config.globalProperties.$http = axios;
+
 app.mount("#app");
