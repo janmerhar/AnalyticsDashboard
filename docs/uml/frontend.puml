@@ -1,0 +1,179 @@
+@startuml Events7
+
+title Events7 frontend
+
+skinparam class {
+  backgroundColor white
+  borderColor #5FB8EC
+  arrowColor black
+}
+skinparam class<<entity>> {
+  backgroundColor #e8f5fc
+  borderColor Blue
+}
+skinparam class<<control>> {
+  backgroundColor #fce8e8
+  borderColor Red
+}
+skinparam class<<boundary>> {
+  backgroundColor #f2fce8
+  borderColor Green
+}
+skinparam class<<External API>>{
+  backgroundColor #f8f0d4
+  borderColor Orange
+}
+skinparam class<<Vue view>>{
+  backgroundColor #f8f0d4
+  borderColor Orange
+}
+
+' skinparam shadowing false
+skinparam style strictuml
+skinparam defaultTextAlignment center
+' skinparam packageStyle rectangle
+skinparam groupInheritance 5
+hide circle
+' hide members
+
+
+'---------Razredi---------------------------
+class EventFilter {
+    searchby: String
+    query: String
+    type: String
+    priority: number
+    sort: String
+    order: String
+}
+
+class EventDetails {
+  - id: Number
+  - name: String
+  - description: String
+  - type: String
+  - priority: Number
+}
+
+class Event <<entity>> {
+  - id: Number
+  - name: String
+  - description: String
+  - type: EventType
+  - priority: EventPriority
+  + constructor(event: EventDetails)
+  + private toObject(): Object
+  + isValid(): String[]
+  + save(axios: AxiosInstance): Boolean
+  + update(axios: AxiosInstance, newId: Number): Boolean
+  + static async fetchAll(axios: AxiosInstance, filter: EventFilter, Page: number = 1): Event[]
+  + static async deleteOne(axios: AxiosInstance, event: Event): Boolean
+}
+
+Event --|> EventDetails
+Event --|> AxiosInstance
+
+'---------Components---------------------------
+package Components {
+  class ButtonFab <<Vue component>> {
+  }
+
+  class CardEvent <<Vue component>>{
+    - event: Event
+    - show: Boolean
+    + delete(event: Event): void
+    + edit(event: Event): void
+  }
+
+  class FormSearchEvent <<Vue component>>{
+    - eventFilter: EventFilter
+    - sortItems: String[]
+    - sortType: String[]
+    - sortPriority: Number[]
+    + search(eventFilter: EventFilter): void
+    + setSort(sort: String): void
+  }
+
+  class InputForm <<Vue component>>{
+    - isOpen: Boolean
+    - localEvent: Event
+    - invalidId: Boolean
+    - sortType: String[]
+    - sortPriority: Number[]
+    - validateRules: Object
+    + search(eventFilter: EventFilter): void
+    + setSort(sort: String): void
+    + close(): void
+    + confirm(id: Number, event: Event): void
+  }
+
+  CardEvent ..> Event : uses
+
+  FormSearchEvent ..> EventFilter : uses
+
+  InputForm ..> Event : uses
+  IniputForm ..> EventFilter : uses
+
+  '---------Layouts---------------------------
+  package Layout {
+    class AppBar <<Vue component>>{
+
+    }
+
+    class Default <<Vue component>>{
+
+    }
+
+    Default ..> AppBar : uses
+    Default ..> View : uses
+
+    class View <<Vue component>>{
+      - name: String
+      + isMobile(): String
+    }
+  }
+}
+
+
+'---------Views---------------------------
+package Views {
+  class Events <<Vue component>> {
+    - page: Number
+    - searchParams: EventFilter
+    - errors: String[]
+    - events: Event[]
+    - isOpen: Boolean
+    - insertedEvent: Event
+    - insertMode: String
+    - snackbar: Object
+    + searchEvents(eventFilter: EventFilter, page: number = 1): void
+    + nextPage(): void
+    + prevPage(): void
+    + addEvent(): void
+    + editEvent(event: Event): void
+    + removeEvent(event: Event): void
+    + openInput(): void
+    + closeInput(): void
+    + insertUpdateAPI(newId: Number | String, event: Event): void
+  }
+
+  Events ..> Event : uses
+  Events ..> EventFilter : uses
+
+  Events ..> CardEvent : uses
+  Events ..> FormSearch : uses
+  Events ..> InputForm : uses
+  Events ..> ButtonFab : uses
+
+
+  class App <<Vue component>> {
+    - $http: AxiosInstance
+  }
+
+  App ..> Events : uses
+  App ..> AxiosInstance : uses
+}
+
+'---------Povezave---------------------------
+
+@enduml
