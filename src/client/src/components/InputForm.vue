@@ -20,6 +20,7 @@
                     :rules="validateRules.id()"
                     v-model="localEvent.id"
                     required
+                    :class="{ 'missing-id': invalidId }"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="8">
@@ -65,11 +66,7 @@
           <!--  -->
           <v-card-actions>
             <v-spacer></v-spacer>
-            <!-- 
-                TODO
-                SEND EMIT TO Main
-                for dissmisal
-             -->
+
             <v-btn color="blue-darken-1" variant="text" @click="$emit('close')">
               {{ $t("InputForm.close.button") }}
             </v-btn>
@@ -135,15 +132,18 @@ const isOpen = computed({
   get: () => props.dialog,
 });
 
-const localEvent = ref<Event | null>(
-  new Event({
-    id: 2,
-    name: "Testaa",
-    description: "Testa",
-    type: "ads",
-    priority: 1,
-  })
-);
+const localEvent =
+  props.mode == "add"
+    ? ref<Event | null>(
+        new Event({
+          id: 0,
+          name: "",
+          description: "",
+          type: "ads",
+          priority: 0,
+        })
+      )
+    : ref<Event | null>(new Event(props.insertedEvent));
 
 import { useI18n } from "vue-i18n";
 const { t } = useI18n({ useScope: "global" });
@@ -163,3 +163,9 @@ const validateRules = ref({
   },
 });
 </script>
+
+<style scoped>
+.missing-id {
+  border: 1px solid red;
+}
+</style>
