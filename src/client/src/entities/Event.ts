@@ -60,11 +60,11 @@ export class Event implements EventDetails {
       errors.push("id");
     }
 
-    if (!this.name) {
+    if (this.name.length == 0) {
       errors.push("name");
     }
 
-    if (!this.description) {
+    if (this.description.length == 0) {
       errors.push("description");
     }
 
@@ -72,7 +72,7 @@ export class Event implements EventDetails {
       errors.push("type");
     }
 
-    if (!this.priority || (this.priority < 0 && this.priority > 10)) {
+    if (this.priority < 0 && this.priority > 10) {
       errors.push("priority");
     }
 
