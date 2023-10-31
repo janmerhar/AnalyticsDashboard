@@ -1,0 +1,157 @@
+@startuml Events7
+
+title Events7 backend
+
+skinparam class {
+  backgroundColor white
+  borderColor #5FB8EC
+  arrowColor black
+}
+skinparam class<<entity>> {
+  backgroundColor #e8f5fc
+  borderColor Blue
+}
+skinparam class<<control>> {
+  backgroundColor #fce8e8
+  borderColor Red
+}
+skinparam class<<boundary>> {
+  backgroundColor #f2fce8
+  borderColor Green
+}
+skinparam class<<External API>>{
+  backgroundColor #f8f0d4
+  borderColor Orange
+}
+skinparam class<<Vue view>>{
+  backgroundColor #f8f0d4
+  borderColor Orange
+}
+
+' skinparam shadowing false
+skinparam style strictuml
+skinparam defaultTextAlignment center
+' skinparam packageStyle rectangle
+skinparam groupInheritance 5
+hide circle
+' hide members
+
+'---------Razredi---------------------------
+class Event <<entity>> {
+    - _id: Number
+    - name: String
+    - description: String
+    - type: String
+    - priority: Number
+}
+
+class EventsService {
+  - PAGE_SIZE: number
+  - logger: Logger
+  + constructor(eventModel: Event)
+  + findAll(page: Number, search: SearchEventDto): Promise<Event[]>
+  + insertOne(createEventDto: CreateEventDto): Promise<Event>
+  + updateOne(id: Number, createEventDto: CreateEventDto): Promise<Event>
+  + deleteOne(id: Number): Promise<void>
+}
+
+class EventsController {
+  + constructor(eventsService: EventsService)
+  + getEvents(page: Number, search: SearchEventDto): Promise<Event[]>
+  + postEvent(body: CreateEventDto): Promise<Event>
+  + patchEvent(id: Number, body: CreateEventDto): Promise<Event>
+  + deleteEvent(id: Number): Promise<Boolean>
+}
+
+class EventsModule {
+  + constructor()
+}
+
+class AppModule {
+  + constructor()
+  + configure(consumer: MiddlewareConsumer): void
+}
+
+package Exceptions {
+  class HttpException {
+    + message: String
+    + status: HttpStatus
+    + response: Any
+
+    {abstract} + constructor(message: string, status: HttpStatus)
+    + getResponse(): Any
+  }
+
+  class EventNotFound {
+    + EventNotFound(message: String)
+  }
+
+  class EventAlreadyExists {
+    + constructor()
+  }
+
+  class EventNotValid {
+    + constructor(field: String)
+  }
+
+  HttpException <|-- EventNotFound
+  HttpException <|-- EventAlreadyExists
+  HttpException <|-- EventNotValid
+}
+
+package "Data Transfer Objects" {
+  class SearchEventDto {
+    - name: String
+    - description: String
+    - type: String
+    - priority: Number
+  }
+
+  class CreateEventDto {
+    - name: String
+    - description: String
+    - type: String
+    - priority: Number
+  }
+}
+
+package Logger {
+  class LoggerMiddleware {
+    - logger: Logger
+    + use(req: Request, res: Response, next: NextFunction): void
+  }
+
+  class Logger {
+    - context: string
+    + log(message: string): void
+  }
+
+  LoggerMiddleware ..> Logger : uses
+}
+
+
+'---------Povezave---------------------------
+
+' EventsService connections
+EventsService ..> Logger : uses
+EventsService ..> EventAlreadyExists  : uses
+EventsService ..> EventNotValid : uses
+EventsService ..> EventNotFound : uses
+EventsService ..> Event : uses
+EventsService ..> SearchEventDto : uses
+EventsService ..> CreateEventDto : uses
+EventsService ..> LoggerMiddleware : uses
+
+' EventsController connections
+EventsController ..> EventsService : uses
+EventsController ..> CreateEventDto : uses
+EventsController ..> UpdateEventEventDto : uses
+
+' EventsModule connections
+EventsModule ..> EventsController : uses
+EventsModule ..> EventsService : uses
+
+' AppModule connections
+AppModule ..> EventsModule : imports
+AppModule ..> LoggerMiddleware : uses
+@enduml
