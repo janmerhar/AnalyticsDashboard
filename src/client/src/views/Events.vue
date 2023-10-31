@@ -110,7 +110,16 @@ const openInput = () => {
 };
 
 const closeInput = () => {
+  errors.value = [];
   isOpen.value = false;
+
+  insertedEvent.value = new Event({
+    id: 0,
+    name: "",
+    description: "",
+    type: "app",
+    priority: 0,
+  });
 };
 
 const addEvent = () => {
@@ -149,12 +158,10 @@ const insertUpdateAPI = async (newId: number | string, event: Event) => {
   const errorsEvent = event.isValid();
 
   if (errorsEvent?.length > 0) {
-    console.log("ERRORS", errorsEvent);
     errors.value = errorsEvent;
     return;
   }
 
-  console.log("INSERT", insertMode.value);
   try {
     if (insertMode.value === "add") {
       await event.save($http);
@@ -165,7 +172,6 @@ const insertUpdateAPI = async (newId: number | string, event: Event) => {
     await searchEvents(searchParams.value, page.value);
     closeInput();
   } catch (e) {
-    console.log("ERROR", e);
     errors.value = ["id"];
   }
 };
