@@ -20,7 +20,7 @@
                     :rules="validateRules.id()"
                     v-model="localEvent.id"
                     required
-                    :class="{ 'missing-id': invalidId }"
+                    :class="{ 'missing-id': invalidId() }"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" sm="8">
@@ -132,23 +132,35 @@ const isOpen = computed({
   get: () => props.dialog,
 });
 
-const localEvent =
-  props.mode == "add"
-    ? ref<Event | null>(
-        new Event({
-          id: 0,
-          name: "",
-          description: "",
-          type: "ads",
-          priority: 0,
-        })
-      )
-    : ref<Event | null>(new Event(props.insertedEvent));
+const createInputEvent = (mode: string) => {
+  if (mode == "add") {
+    return new Event({
+      id: 0,
+      name: "",
+      description: "",
+      type: "ads",
+      priority: 0,
+    });
+  } else {
+    return new Event(props.insertedEvent);
+  }
+};
+
+const localEvent = ref<Event>(createInputEvent(props.mode));
+
+const mode = computed({
+  get: () => props.mode,
+});
+
+watch(mode, () => {
+  localEvent.value = createInputEvent(props.mode);
+});
 
 import { useI18n } from "vue-i18n";
+import { watch } from "vue";
 const { t } = useI18n({ useScope: "global" });
 
-const invalidId = ref<boolean>(props.errors.includes("id"));
+const invalidId = (): boolean => props.errors.includes("id");
 
 const validateRules = ref({
   id: () => {
@@ -166,6 +178,6 @@ const validateRules = ref({
 
 <style scoped>
 .missing-id {
-  border: 1px solid red;
+  border-bottom: 1px solid red;
 }
 </style>
