@@ -36,7 +36,7 @@ The structure is the following:
 
 ```bash
 PORT=4000
-MONGODB_URI=combi
+MONGODB_URI=full connection URI
 ```
 
 ### Compiling
