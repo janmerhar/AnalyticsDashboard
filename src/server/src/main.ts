@@ -7,7 +7,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.setGlobalPrefix('api');
   app.enableCors({
-    origin: process.env.NODE_ENV === 'production' ? '*' : null,
+    origin: process.env.NODE_ENV == 'production' ? null : '*',
     methods: 'GET,POST,PATCH,DELETE',
     allowedHeaders: 'Content-Type, Accept',
   });
